@@ -1,7 +1,12 @@
 [package]
-name = "rsa_decrypt"
-version = "0.1.0"
+name = "rsa-crypt"
+version = "0.1.1"
 authors = ["Matthias Muenzner <matthias.muenzner@jkaref.com>"]
 edition = "2018"
 
 [dependencies]
+base64 = "0.10.1"
+openssl = "0.10.20"
+
+[dev-dependencies]
+pretty_assertions = "0.4.0"
