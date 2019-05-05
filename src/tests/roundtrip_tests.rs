@@ -1,8 +1,8 @@
-#[cfg(test)]
+# [cfg(test)]
 use crate::function::_read_from_file;
-#[cfg(test)]
+# [cfg(test)]
 use crate::encrypter::{Encrypter, RsaEncrypter, Encryptable};
-#[cfg(test)]
+# [cfg(test)]
 use crate::decrypter::{RsaDecrypter, Decryptable, Decrypter};
 
 #[test]
@@ -21,14 +21,14 @@ fn test_encrypt_decrypt_roundtrip() {
     let ciphertext_len: usize = rsa_encrypter
         .encrypt(
             &plaintext.as_bytes().to_vec(),
-            &mut ciphertext
+            &mut ciphertext,
         );
     assert!(ciphertext_len > 0);
 
     let mut decrypted_plaintext: Vec<u8> = Vec::new();
 
     let rsa_decrypter: Decrypter<RsaDecrypter> = Decrypter::new(
-        &private_key, &Vec::new()
+        &private_key, &Vec::new(),
     );
 
     let plaintext_len: usize = rsa_decrypter
