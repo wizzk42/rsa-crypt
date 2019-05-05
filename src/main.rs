@@ -1,12 +1,15 @@
 use std::env;
 use base64;
-use crate::function::_read_from_file;
 
 pub mod function;
-pub mod tests;
+use crate::function::_read_from_file;
 
-pub mod decrypter;
 pub mod encrypter;
+pub mod decrypter;
+use decrypter::{RsaDecrypter, Decryptable, Decrypter};
+use encrypter::{RsaEncrypter, Encryptable, Encrypter};
+
+pub mod tests;
 
 fn help() {
     println!("Usage:");
@@ -26,7 +29,8 @@ fn main() {
 
             let mut ciphertext: Vec<u8> = Vec::new();
             let _key = _read_from_file(filename);
-            let _ciphertext_len = encrypter::RsaEncrypter::new(&_key).encrypt(
+            let rsa: Encrypter<RsaEncrypter> = Encrypter::new(&_key);
+            let _ciphertext_len = rsa.encrypt(
                 &plaintext.as_bytes().to_vec(),
                 &mut ciphertext,
             );
@@ -45,8 +49,10 @@ fn main() {
             };
 
             let mut plaintext = Vec::new();
-
-            let _plaintext_len = decrypter::RsaDecrypter::new(&_key, &passphrase.as_bytes().to_vec()).decrypt(
+            let rsa: Decrypter<RsaDecrypter> = Decrypter::new(
+                &_key, &passphrase.as_bytes().to_vec()
+            );
+            let _plaintext_len = rsa.decrypt(
                 &mut plaintext,
                 &ciphertext,
             );
