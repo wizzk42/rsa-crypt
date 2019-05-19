@@ -1,13 +1,19 @@
 use std::env;
 use base64;
 
-pub mod function;
-use crate::function::_read_from_file;
+extern crate rsa_crypt;
 
-pub mod encrypter;
-pub mod decrypter;
-use decrypter::{RsaDecrypter, Decryptable, Decrypter};
-use encrypter::{RsaEncrypter, Encryptable, Encrypter};
+use crate::rsa_crypt::{
+    Decryptable,
+    Encryptable,
+    Decrypter,
+    AesDecrypter,
+    RsaDecrypter,
+    Encrypter,
+    AesEncrypter,
+    RsaEncrypter,
+    read_from_file,
+};
 
 pub mod tests;
 
@@ -28,8 +34,10 @@ fn main() {
             println!("Encrypting plaintext {} using key at {}", plaintext, filename);
 
             let mut ciphertext: Vec<u8> = Vec::new();
-            let _key = _read_from_file(filename);
+            let _key = read_from_file(filename);
+
             let rsa: Encrypter<RsaEncrypter> = Encrypter::new(&_key);
+
             let _ciphertext_len = rsa.encrypt(
                 &plaintext.as_bytes().to_vec(),
                 &mut ciphertext,
@@ -41,7 +49,7 @@ fn main() {
             let filename = &args[1];
             let passphrase = &args[2];
 
-            let _key = _read_from_file(filename);
+            let _key = read_from_file(filename);
 
             let ciphertext = match base64::decode(&args[3]) {
                 Err(_) => args[3].as_bytes().to_vec(),
@@ -50,7 +58,8 @@ fn main() {
 
             let mut plaintext = Vec::new();
             let rsa: Decrypter<RsaDecrypter> = Decrypter::new(
-                &_key, &passphrase.as_bytes().to_vec()
+                &_key,
+                &passphrase.as_bytes().to_vec()
             );
             let _plaintext_len = rsa.decrypt(
                 &mut plaintext,

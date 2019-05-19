@@ -1,6 +1,6 @@
 [package]
 name = "rsa-crypt"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Matthias Muenzner <matthias.muenzner@jkaref.com>"]
 edition = "2018"
 

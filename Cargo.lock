@@ -102,7 +102,7 @@ dependencies = [
 
 [[package]]
 name = "rsa-crypt"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "base64 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "openssl 0.10.20 (registry+https://github.com/rust-lang/crates.io-index)",
