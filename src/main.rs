@@ -15,6 +15,11 @@ use crate::rsa_crypt::{
     read_from_file,
 };
 
+use crate::rsa_crypt::{
+    generate,
+    Algorithm
+};
+
 pub mod tests;
 
 fn help() {

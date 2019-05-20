@@ -29,7 +29,10 @@ pub fn read_from_file(name: &str) -> Vec<u8> {
     result
 }
 
-pub fn load_rsa_private_key(private_key: &Vec<u8>, passphrase: &Vec<u8>) -> Result<Rsa<Private>, ErrorStack> {
+pub fn load_rsa_private_key(
+    private_key: &Vec<u8>,
+    passphrase: &Vec<u8>,
+) -> Result<Rsa<Private>, ErrorStack> {
     Rsa::private_key_from_pem_passphrase(private_key, passphrase)
 }
 
@@ -43,22 +46,26 @@ pub fn load_aes_key(_data: &Vec<u8>) -> (&str, &str, &str) {
     let mut salt: &str = "";
 
     for line in _data.split(|c| *c as char == '\n') {
-        let k: &str = line.splitn(2, |c| *c as char == '=')
-            .next()
-            .unwrap();
-        let v: &str = line.splitn(2, |c| *c as char == '=')
-            .next()
-            .unwrap();
+        let k: &str = std::str::from_utf8(
+            line.splitn(2, |c| *c as char == '=')
+                .next()
+                .unwrap()
+        ).unwrap();
+        let v: &str = std::str::from_utf8(
+            line.splitn(2, |c| *c as char == '=')
+                .next()
+                .unwrap()
+        ).unwrap();
         match k.trim() {
             "key" => {
                 key = v;
-            },
+            }
             "iv" => {
                 iv = v;
-            },
+            }
             "salt" => {
                 salt = v;
-            },
+            }
             _ => {
                 // skip other keys
             }

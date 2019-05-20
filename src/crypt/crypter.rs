@@ -46,8 +46,6 @@ pub mod asymmetric {
     }
 }
 
-use openssl::symm::Cipher;
-
 pub mod symmetric {
     #[derive(Clone)]
     pub struct SymmetricKey<KeyType> {
