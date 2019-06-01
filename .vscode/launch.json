@@ -1,0 +1,81 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "custom",
+            "name": "Custom launch",
+            "targetCreateCommands": [
+                "target create ${workspaceFolder}/rsa_crypt"
+            ],
+            "processCreateCommands": [
+                "settings set target.run-args",
+                "process launch"
+            ]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'rsa-crypt'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=rsa-crypt"
+                ],
+                "filter": {
+                    "name": "rsa-crypt",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'rsa-crypt'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rsa-crypt",
+                    "--package=rsa-crypt"
+                ],
+                "filter": {
+                    "name": "rsa-crypt",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "password",
+                "-a pbkdf2",
+                "-h sha256",
+                "-p test"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'rsa-crypt'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=rsa-crypt",
+                    "--package=rsa-crypt"
+                ],
+                "filter": {
+                    "name": "rsa-crypt",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

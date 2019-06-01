@@ -1,6 +1,6 @@
-/*
- * Copyright (c) 2019 [j]karef GmbH. All rights reserved.
- */
+///
+///
+///
 
 extern crate openssl;
 
@@ -12,9 +12,11 @@ use openssl::{
 
 use super::crypter::{
     Encryptable,
+    CipherBlockMode,
     asymmetric::AsymmetricEncryptable,
     symmetric::{
         SymmetricKey,
+        AesVariant,
         AesCipherMode,
         SymmetricCryptableWithAead,
         SymmetricCryptableWithTag,
@@ -82,30 +84,31 @@ impl AesEncrypter {
 
     fn choose_cipher_fn(&self) -> Cipher {
         match self.cipher {
-            AesCipherMode::Aes128Cbc => {
+            AesCipherMode::Aes128Cbc(AesVariant::Aes128, CipherBlockMode::Cbc) => {
                 Cipher::aes_128_cbc()
             }
-            AesCipherMode::Aes128Ctr => {
+            AesCipherMode::Aes128Ctr(AesVariant::Aes128, CipherBlockMode::Ctr) => {
                 Cipher::aes_128_ctr()
             }
-            AesCipherMode::Aes128Gcm => {
+            AesCipherMode::Aes128Gcm(AesVariant::Aes128, CipherBlockMode::Gcm) => {
                 Cipher::aes_128_gcm()
             }
-            AesCipherMode::Aes128Xts => {
+            AesCipherMode::Aes128Xts(AesVariant::Aes128, CipherBlockMode::Xts) => {
                 Cipher::aes_128_xts()
             }
-            AesCipherMode::Aes256Cbc => {
+            AesCipherMode::Aes256Cbc(AesVariant::Aes256, CipherBlockMode::Cbc) => {
                 Cipher::aes_128_cbc()
             }
-            AesCipherMode::Aes256Ctr => {
+            AesCipherMode::Aes256Ctr(AesVariant::Aes256, CipherBlockMode::Ctr) => {
                 Cipher::aes_256_ctr()
             }
-            AesCipherMode::Aes256Gcm => {
+            AesCipherMode::Aes256Gcm(AesVariant::Aes256, CipherBlockMode::Gcm) => {
                 Cipher::aes_256_gcm()
             }
-            AesCipherMode::Aes256Xts => {
+            AesCipherMode::Aes256Xts(AesVariant::Aes256, CipherBlockMode::Xts) => {
                 Cipher::aes_256_xts()
-            }
+            },
+            _ => Cipher::aes_256_gcm()
         }
     }
 }
@@ -116,7 +119,7 @@ impl Encryptable for AesEncrypter {
         let salt: Vec<u8> = Vec::new();
         AesEncrypter {
             key: SymmetricKey::new(_key, &iv, &salt),
-            cipher: AesCipherMode::Aes256Gcm,
+            cipher: AesCipherMode::Aes256Gcm(AesVariant::Aes256, CipherBlockMode::Gcm),
             aead: None,
             tag_buffer_size: 32
         }

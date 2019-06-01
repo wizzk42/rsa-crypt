@@ -5,8 +5,11 @@ authors = ["Matthias Muenzner <matthias.muenzner@jkaref.com>"]
 edition = "2018"
 
 [dependencies]
-base64 = "0.10.1"
-openssl = "0.10.20"
+base64 = "^0.10.1"
+openssl = "^0.10.20"
+hex = "^0.3.2"
+clap = { version = "~2.33.0", features = ["suggestions", "color", "yaml"] }
+structopt = "~0.2.15"
 
 [dev-dependencies]
-pretty_assertions = "0.4.0"
+pretty_assertions = "^0.4.0"

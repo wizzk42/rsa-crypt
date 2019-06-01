@@ -1,12 +1,16 @@
+///
+///
+///
+
 #[cfg(test)]
 extern crate rsa_crypt;
 
 #[cfg(test)]
-use rsa_crypt::read_from_file;
+use rsa_crypt::util::files::read_from_file;
 #[cfg(test)]
-use rsa_crypt::{Encrypter, AesEncrypter, RsaEncrypter, Encryptable};
+use rsa_crypt::crypt::{Encrypter, AesEncrypter, RsaEncrypter, Encryptable};
 #[cfg(test)]
-use rsa_crypt::{Decrypter, AesDecrypter, RsaDecrypter, Decryptable};
+use rsa_crypt::crypt::{Decrypter, AesDecrypter, RsaDecrypter, Decryptable};
 
 #[test]
 fn test_rsa_encrypt_decrypt_roundtrip() {

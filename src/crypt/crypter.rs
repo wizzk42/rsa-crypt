@@ -1,3 +1,7 @@
+///
+///
+///
+
 pub trait Encryptable {
     fn new(_key: &Vec<u8>) -> Self;
     fn encrypt(&self, plaintext: &Vec<u8>, ciphertext: &mut Vec<u8>) -> usize;
@@ -18,6 +22,16 @@ impl<KeyType> Key<KeyType> where KeyType: Clone {
     pub fn raw(&self) -> &KeyType {
         &self.0
     }
+}
+
+pub enum CipherBlockMode {
+    Cbc,
+    Ccm,
+    Cfb,
+    Ctr,
+    Gcm,
+    Ofb,
+    Xts,
 }
 
 pub mod asymmetric {
@@ -73,15 +87,20 @@ pub mod symmetric {
         }
     }
 
+    pub enum AesVariant {
+        Aes128,
+        Aes256,
+    }
+
     pub enum AesCipherMode {
-        Aes128Cbc,
-        Aes128Ctr,
-        Aes128Gcm,
-        Aes128Xts,
-        Aes256Cbc,
-        Aes256Ctr,
-        Aes256Gcm,
-        Aes256Xts,
+        Aes128Cbc(AesVariant, super::CipherBlockMode),
+        Aes128Ctr(AesVariant, super::CipherBlockMode),
+        Aes128Gcm(AesVariant, super::CipherBlockMode),
+        Aes128Xts(AesVariant, super::CipherBlockMode),
+        Aes256Cbc(AesVariant, super::CipherBlockMode),
+        Aes256Ctr(AesVariant, super::CipherBlockMode),
+        Aes256Gcm(AesVariant, super::CipherBlockMode),
+        Aes256Xts(AesVariant, super::CipherBlockMode),
     }
 
     pub trait SymmetricCryptableWithTag {

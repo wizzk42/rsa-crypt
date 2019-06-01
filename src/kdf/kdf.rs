@@ -1,75 +1,58 @@
-use openssl::pkcs5::pbkdf2_hmac;
-use openssl::hash::MessageDigest;
-use openssl::error::{Error, ErrorStack};
+///
+///
+///
 
-#[derive(Clone)]
-pub enum Algorithm {
-    Pbkdf2,
-    Argon2d,
-    Argon2i,
-}
+use openssl::{
+    pkcs5::pbkdf2_hmac,
+    hash::MessageDigest,
+    error::ErrorStack,
+};
 
-#[derive(Clone)]
-pub enum Hash {
-    Sha256,
-    Sha384,
-    Sha512,
-    Sha3_224,
-    Sha3_256,
-    Sha3_384,
-    Sha3_512,
-    Ripemd160,
-}
+use crate::hash::Hash;
 
-#[derive(Clone)]
-pub enum KeyDerivationOpts {}
+use super::{
+    Algorithm,
+    KeyDerivationOpts,
+    KeyDerivationParameters,
+};
 
-#[derive(Clone)]
-pub struct Data {
-    pub hash: Hash,
-    pub pass: Vec<u8>,
-    pub iv: Vec<u8>,
-    pub iter: usize,
-    pub salt: Vec<u8>,
-}
-
-pub fn generate(_algorithm: Algorithm, _data: &Data, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
-    match _algorithm {
-        Algorithm::Pbkdf2 => pbkdf2(_data, _opts),
-        Algorithm::Argon2d => argon2d(_data, _opts),
-        Algorithm::Argon2i => argon2i(_data, _opts),
+pub fn generate(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
+    match _params.algorithm {
+        Algorithm::None => panic!("No algorithm selected"),
+        Algorithm::Pbkdf2 => pbkdf2(_params, _opts),
+        Algorithm::Argon2d => argon2d(_params, _opts),
+        Algorithm::Argon2i => argon2i(_params, _opts),
     }
 }
 
-fn pbkdf2(_data: &Data, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
+fn pbkdf2(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
     let mut _key: Vec<u8> = Vec::new();
-    let res: Result<(), ErrorStack> = pbkdf2_hmac(
-        &_data.pass,
-        &_data.salt,
-        _data.iter,
-        select_message_digest(&_data.hash),
+    _key.resize(_params.hash.size(), 0x00);
+    match pbkdf2_hmac(
+        &_params.passphrase.to_bytes(),
+        &_params.salt.to_bytes(),
+        _params.iter,
+        select_message_digest(&_params.hash),
         &mut _key,
-    );
-
-    if res.is_err() {
-        Err(res.err().unwrap())
-    } else {
-        Ok(Box::new(_key))
+    ) {
+        Err(err) => Err(err),
+        Ok(_) => Ok(Box::new(_key)),
     }
 }
 
-fn argon2i(_data: &Data, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
+fn argon2i(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
     let _key: Vec<u8> = Vec::new();
     Ok(Box::new(_key))
 }
 
-fn argon2d(_data: &Data, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
+fn argon2d(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
     let _key: Vec<u8> = Vec::new();
     Ok(Box::new(_key))
 }
 
 fn select_message_digest(_hash: &Hash) -> MessageDigest {
     match _hash {
+        Hash::Sha224 => MessageDigest::sha224(),
         Hash::Sha256 => MessageDigest::sha256(),
         Hash::Sha384 => MessageDigest::sha384(),
         Hash::Sha512 => MessageDigest::sha512(),
