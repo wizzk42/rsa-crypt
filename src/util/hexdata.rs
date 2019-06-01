@@ -5,17 +5,17 @@
 use std::str::FromStr;
 
 #[derive(Clone, Debug)]
-pub struct HexData(Vec<u8>);
+pub struct HexVec(Vec<u8>);
 
-impl HexData {
+impl HexVec {
     pub fn from_hex(_s: &str) -> Self {
-        HexData(hex::decode(_s).unwrap())
+        HexVec(hex::decode(_s).unwrap())
     }
     pub fn from_bytes(_b : Vec<u8>) -> Self {
-        HexData(_b)
+        HexVec(_b)
     }
     pub fn empty() -> Self {
-        HexData(vec![])
+        HexVec(vec![])
     }
     pub fn to_hex(&self) -> String {
         hex::encode(self.0.clone())
@@ -25,10 +25,10 @@ impl HexData {
     }
 }
 
-impl FromStr for HexData {
+impl FromStr for HexVec {
     type Err = ();
 
     fn from_str(_s: &str) -> Result<Self, Self::Err> {
-        Ok(HexData::from_hex(_s))
+        Ok(HexVec::from_hex(_s))
     }
 }

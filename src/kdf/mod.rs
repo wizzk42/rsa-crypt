@@ -40,10 +40,10 @@ impl FromStr for Algorithm {
 pub struct KeyDerivationParameters {
     pub algorithm: Algorithm,
     pub hash: Hash,
-    pub passphrase: hexdata::HexData,
-    pub iv: hexdata::HexData,
+    pub passphrase: hexdata::HexVec,
+    pub iv: hexdata::HexVec,
     pub iter: usize,
-    pub salt: hexdata::HexData,
+    pub salt: hexdata::HexVec,
     pub max_threads: usize,
     pub max_mem: usize,
 }
@@ -53,10 +53,10 @@ impl KeyDerivationParameters {
         KeyDerivationParameters {
             algorithm: Algorithm::None,
             hash: Hash::Sha3_512,
-            passphrase: hexdata::HexData::from_bytes(vec![]),
-            iv: hexdata::HexData::from_bytes(vec![]),
+            passphrase: hexdata::HexVec::from_bytes(vec![]),
+            iv: hexdata::HexVec::from_bytes(vec![]),
             iter: DEFAULT_ITER,
-            salt: hexdata::HexData::from_bytes(DEFAULT_SALT.to_vec()),
+            salt: hexdata::HexVec::from_bytes(DEFAULT_SALT.to_vec()),
             max_threads: DEFAULT_MAX_THREADS,
             max_mem: DEFAULT_MAX_MEM,
         }

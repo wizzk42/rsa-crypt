@@ -52,7 +52,7 @@ impl CryptCommandLine {
         let mut p = crypt::CryptoParameters::new();
         p.algorithm = crypt::Algorithm::from_str(&self.algorithm).unwrap_or(crypt::Algorithm::None);
         p.base64 = self.base64;
-        p.passphrase = util::hexdata::HexData::from_bytes(self.passphrase.as_bytes().to_vec());
+        p.passphrase = util::hexdata::HexVec::from_bytes(self.passphrase.as_bytes().to_vec());
         p
     }
 }
@@ -78,8 +78,8 @@ impl KdfCommandLine {
         p.algorithm = kdf::Algorithm::from_str(&self.algorithm).unwrap_or(kdf::Algorithm::None);
         p.hash = hash::Hash::from_str(&self.hash).unwrap_or(hash::Hash::Sha3_512);
         p.iter = self.iter;
-        p.salt =util:: hexdata::HexData::from_bytes(self.salt.as_bytes().to_vec());
-        p.passphrase = util::hexdata::HexData::from_bytes(self.passphrase.as_bytes().to_vec());
+        p.salt =util:: hexdata::HexVec::from_bytes(self.salt.as_bytes().to_vec());
+        p.passphrase = util::hexdata::HexVec::from_bytes(self.passphrase.as_bytes().to_vec());
         p
     }
 }
@@ -111,7 +111,7 @@ fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
         _ => 0
     };
     if res > 0 {
-        let out = util::hexdata::HexData::from_bytes(ciphertext);
+        let out = util::hexdata::HexVec::from_bytes(ciphertext);
         println!("{:?}", out);
         Ok(())
     } else {
@@ -151,7 +151,7 @@ fn cmd_decrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
         _ => 0
     };
     if res > 0 {
-        let out = util::hexdata::HexData::from_bytes(plaintext);
+        let out = util::hexdata::HexVec::from_bytes(plaintext);
         println!("{:?}", out);
         Ok(())
     } else {

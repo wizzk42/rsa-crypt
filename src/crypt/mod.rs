@@ -55,22 +55,22 @@ impl FromStr for Algorithm {
 #[derive(Clone, Debug)]
 pub struct CryptoParameters {
     pub algorithm: Algorithm,
-    pub key: hexdata::HexData,
-    pub passphrase: hexdata::HexData,
+    pub key: hexdata::HexVec,
+    pub passphrase: hexdata::HexVec,
     pub base64: bool,
-    pub input: std::cell::Cell<hexdata::HexData>,
-    pub output: std::cell::Cell<hexdata::HexData>,
+    pub input: hexdata::HexVec,
+    pub output: hexdata::HexVec,
 }
 
 impl CryptoParameters {
     pub fn new() -> Self {
         CryptoParameters {
             algorithm: Algorithm::None,
-            key: hexdata::HexData::empty(),
-            passphrase: hexdata::HexData::empty(),
+            key: hexdata::HexVec::empty(),
+            passphrase: hexdata::HexVec::empty(),
             base64: false,
-            input: hexdata::HexData::empty(),
-            output: hexdata::HexData::empty(),
+            input: hexdata::HexVec::empty(),
+            output: hexdata::HexVec::empty(),
         }
     }
 }
