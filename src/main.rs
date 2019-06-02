@@ -52,7 +52,7 @@ impl CryptCommandLine {
         let mut p = crypt::CryptoParameters::new();
         p.algorithm = crypt::Algorithm::from_str(&self.algorithm).unwrap_or(crypt::Algorithm::None);
         p.base64 = self.base64;
-        p.passphrase = util::hexdata::HexVec::from_bytes(self.passphrase.as_bytes().to_vec());
+        p.passphrase =self.passphrase.as_bytes().to_vec();
         p
     }
 }
@@ -86,12 +86,12 @@ impl KdfCommandLine {
 
 fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
     let crypt_cli = _cli.to_crypto_parameters();
-    use crypt::Encryptable;
+    use crypt::{Encryptable};
 
-    let key = crypt_cli.key.to_bytes();
+    let key = crypt_cli.key;
 
-    let plaintext: Vec<u8> = crypt_cli.input.to_bytes();
-    let mut ciphertext: Vec<u8> = vec![];
+    let plaintext = crypt_cli.input.borrow();
+    let mut ciphertext = crypt_cli.output.borrow_mut();
 
     let res = match crypt_cli.algorithm {
         crypt::Algorithm::Aes => {
@@ -111,8 +111,7 @@ fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
         _ => 0
     };
     if res > 0 {
-        let out = util::hexdata::HexVec::from_bytes(ciphertext);
-        println!("{:?}", out);
+        println!("{:?}", ciphertext);
         Ok(())
     } else {
         Err(-2)
@@ -123,11 +122,11 @@ fn cmd_decrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
     let crypt_cli = _cli.to_crypto_parameters();
     use crypt::Decryptable;
 
-    let key = crypt_cli.key.to_bytes();
-    let passphrase = crypt_cli.passphrase.to_bytes();
+    let key = crypt_cli.key;
+    let passphrase = crypt_cli.passphrase;
 
-    let ciphertext: Vec<u8> = crypt_cli.input.to_bytes();
-    let mut plaintext: Vec<u8> = vec![];
+    let ciphertext = crypt_cli.input.borrow();
+    let mut plaintext = crypt_cli.output.borrow_mut();
 
     let res = match crypt_cli.algorithm {
         crypt::Algorithm::Aes => {
@@ -151,8 +150,7 @@ fn cmd_decrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
         _ => 0
     };
     if res > 0 {
-        let out = util::hexdata::HexVec::from_bytes(plaintext);
-        println!("{:?}", out);
+        println!("{:?}", plaintext);
         Ok(())
     } else {
         Err(-2)

@@ -6,15 +6,22 @@ mod crypter;
 mod encrypter;
 mod decrypter;
 mod util;
+mod types;
 
-use std::str::FromStr;
-use crate::util::hexdata;
+use std::{
+    cell,
+    rc,
+    str::FromStr,
+};
 
 pub use crypter::{
     Decryptable,
     Encryptable,
     asymmetric::AsymmetricKey,
-    symmetric::SymmetricKey,
+    symmetric::{
+        SymmetricKey,
+        AesCipherMode,
+    },
 };
 pub use decrypter::{
     Decrypter,
@@ -26,12 +33,11 @@ pub use encrypter::{
     AesEncrypter,
     RsaEncrypter,
 };
+pub use types::*;
 pub use util::{
     load_rsa_public_key,
     load_rsa_private_key,
 };
-
-pub use crypter::symmetric::AesCipherMode;
 
 #[derive(Clone, Debug)]
 pub enum Algorithm {
@@ -55,22 +61,22 @@ impl FromStr for Algorithm {
 #[derive(Clone, Debug)]
 pub struct CryptoParameters {
     pub algorithm: Algorithm,
-    pub key: hexdata::HexVec,
-    pub passphrase: hexdata::HexVec,
+    pub key: Vec<u8>,
+    pub passphrase: Vec<u8>,
     pub base64: bool,
-    pub input: hexdata::HexVec,
-    pub output: hexdata::HexVec,
+    pub input: ByteVecSharedPtr,
+    pub output: ByteVecSharedPtr,
 }
 
 impl CryptoParameters {
     pub fn new() -> Self {
         CryptoParameters {
             algorithm: Algorithm::None,
-            key: hexdata::HexVec::empty(),
-            passphrase: hexdata::HexVec::empty(),
+            key: vec![],
+            passphrase: vec![],
             base64: false,
-            input: hexdata::HexVec::empty(),
-            output: hexdata::HexVec::empty(),
+            input: new_mut_byte_vec(vec![]),
+            output: new_mut_byte_vec(vec![]),
         }
     }
 }
