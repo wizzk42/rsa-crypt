@@ -2,81 +2,81 @@
 ///
 ///
 
+mod api;
 mod crypter;
-mod encrypter;
 mod decrypter;
-mod util;
+mod encrypter;
 mod types;
+mod util;
 
-use std::{
-    cell,
-    rc,
-    str::FromStr,
-};
-
-pub use crypter::{
-    Decryptable,
-    Encryptable,
+pub use api::{
+    decryptable::Decryptable,
+    encryptable::Encryptable,
+    algorithm::Algorithm,
     asymmetric::AsymmetricKey,
     symmetric::{
         SymmetricKey,
         AesCipherMode,
     },
 };
+
 pub use decrypter::{
     Decrypter,
-    AesDecrypter,
-    RsaDecrypter,
+    aes::AesDecrypter,
+    rsa::RsaDecrypter,
 };
 pub use encrypter::{
     Encrypter,
-    AesEncrypter,
-    RsaEncrypter,
+    aes::AesEncrypter,
+    rsa::RsaEncrypter,
 };
 pub use types::*;
-pub use util::{
-    load_rsa_public_key,
-    load_rsa_private_key,
-};
+pub use util::load_aes_key;
 
 #[derive(Clone, Debug)]
-pub enum Algorithm {
-    None,
-    Aes,
-    Rsa,
+pub struct AesOpts {
+    pub mode: Option<AesCipherMode>,
 }
 
-impl FromStr for Algorithm {
-    type Err = ();
+#[derive(Clone, Debug)]
+pub struct RsaOpts {
+}
 
-    fn from_str(_s: &str) -> Result<Algorithm, ()> {
-        return match _s {
-            "aes" => Ok(Algorithm::Aes),
-            "rsa" => Ok(Algorithm::Rsa),
-            _ => Err(()),
-        };
+#[derive(Clone, Debug)]
+pub struct CryptOpts {
+    pub algorithm: Option<Algorithm>,
+    pub aes: Option<AesOpts>,
+    pub rsa: Option<RsaOpts>
+}
+
+impl CryptOpts {
+    pub fn new() -> Self {
+        CryptOpts { algorithm: None, aes: None, rsa: None }
+    }
+    pub fn algorithm_ref(&self) -> &Algorithm {
+        self.algorithm.as_ref().unwrap()
+    }
+    pub fn aes_ref(&self) -> &Option<AesOpts> {
+        &self.aes
+    }
+    pub fn rsa_ref(&self) -> &Option<RsaOpts> {
+       &self.rsa
     }
 }
 
 #[derive(Clone, Debug)]
-pub struct CryptoParameters {
-    pub algorithm: Algorithm,
-    pub key: Vec<u8>,
-    pub passphrase: Vec<u8>,
+pub struct CryptParams {
     pub base64: bool,
-    pub input: ByteVecSharedPtr,
-    pub output: ByteVecSharedPtr,
+    pub passphrase: Option<Vec<u8>>,
+    pub aead: ByteVecSharedPtr, // TODO: discuss
 }
 
-impl CryptoParameters {
+impl CryptParams {
     pub fn new() -> Self {
-        CryptoParameters {
-            algorithm: Algorithm::None,
-            key: vec![],
-            passphrase: vec![],
+        CryptParams {
             base64: false,
-            input: new_mut_byte_vec(vec![]),
-            output: new_mut_byte_vec(vec![]),
+            passphrase: None,
+            aead: new_mut_byte_vec(vec![]),
         }
     }
 }

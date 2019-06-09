@@ -47,16 +47,6 @@ struct CryptCommandLine {
     pub output: String,
 }
 
-impl CryptCommandLine {
-    pub fn to_crypto_parameters(&self) -> crypt::CryptoParameters {
-        let mut p = crypt::CryptoParameters::new();
-        p.algorithm = crypt::Algorithm::from_str(&self.algorithm).unwrap_or(crypt::Algorithm::None);
-        p.base64 = self.base64;
-        p.passphrase =self.passphrase.as_bytes().to_vec();
-        p
-    }
-}
-
 #[derive(Clone, Debug, StructOpt)]
 #[structopt(name = "kdf_cli", about = "crypt command options")]
 struct KdfCommandLine {
@@ -85,33 +75,24 @@ impl KdfCommandLine {
 }
 
 fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
-    let crypt_cli = _cli.to_crypto_parameters();
-    use crypt::{Encryptable};
 
-    let key = crypt_cli.key;
+    // use crypt::Encryptable;
 
-    let plaintext = crypt_cli.input.borrow();
-    let mut ciphertext = crypt_cli.output.borrow_mut();
+    // let mut opts: crypt::CryptOpts = crypt::CryptOpts::new();
 
-    let res = match crypt_cli.algorithm {
-        crypt::Algorithm::Aes => {
-            let encrypter: crypt::Encrypter<crypt::AesEncrypter> = crypt::Encrypter::new(&key);
-            encrypter.encrypt(
-                &plaintext,
-                &mut ciphertext,
-            )
+    let res = match crypt::Algorithm::from_str(_cli.algorithm.as_str()) {
+        Ok(crypt::Algorithm::Aes) => {
+            0
         },
-        crypt::Algorithm::Rsa => {
-            let encrypter: crypt::Encrypter<crypt::RsaEncrypter> = crypt::Encrypter::new(&key);
-            encrypter.encrypt(
-                &plaintext,
-                &mut ciphertext,
-            )
+        Ok(crypt::Algorithm::Rsa) => {
+            0
         },
-        _ => 0
+        Err(()) => {
+            -1
+        },
     };
+
     if res > 0 {
-        println!("{:?}", ciphertext);
         Ok(())
     } else {
         Err(-2)
@@ -119,38 +100,23 @@ fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
 }
 
 fn cmd_decrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
-    let crypt_cli = _cli.to_crypto_parameters();
     use crypt::Decryptable;
 
-    let key = crypt_cli.key;
-    let passphrase = crypt_cli.passphrase;
+    let mut opts: crypt::CryptOpts = crypt::CryptOpts::new();
 
-    let ciphertext = crypt_cli.input.borrow();
-    let mut plaintext = crypt_cli.output.borrow_mut();
-
-    let res = match crypt_cli.algorithm {
-        crypt::Algorithm::Aes => {
-            let decrypter: crypt::Decrypter<crypt::AesDecrypter> = crypt::Decrypter::new(
-                &key, &passphrase
-            );
-            decrypter.decrypt(
-                &mut plaintext,
-                &ciphertext,
-            )
+    let res = match crypt::Algorithm::from_str(_cli.algorithm.as_str()) {
+        Ok(crypt::Algorithm::Aes) => {
+            0
         },
-        crypt::Algorithm::Rsa => {
-            let decrypter: crypt::Decrypter<crypt::RsaDecrypter> = crypt::Decrypter::new(
-                &key, &passphrase
-            );
-            decrypter.decrypt(
-                &mut plaintext,
-                &ciphertext,
-            )
+        Ok(crypt::Algorithm::Rsa) => {
+            0
         },
-        _ => 0
+        Err(()) => {
+            -1
+        },
     };
+
     if res > 0 {
-        println!("{:?}", plaintext);
         Ok(())
     } else {
         Err(-2)
