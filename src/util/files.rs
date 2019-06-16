@@ -3,8 +3,7 @@
 ///
 
 use std::{
-    error::Error,
-    fs::{File, read_to_string},
+    fs::File,
     io::prelude::*,
     path::Path,
 };
@@ -23,4 +22,3 @@ pub fn read_from_file(name: &str) -> Vec<u8> {
     }
     result
 }
-

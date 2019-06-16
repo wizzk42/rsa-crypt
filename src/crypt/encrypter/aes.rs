@@ -9,13 +9,15 @@ use crate::crypt::{
     CryptOpts,
     CryptParams,
     api::{
-        aes::AesSymmetricKey,
+        aes::{
+            AesCipherMode,
+            AesSymmetricKey,
+            AesVariant,
+        },
         ciphermodes::CipherBlockMode,
         key::Key,
         encryptable::Encryptable,
         symmetric::{
-            AesVariant,
-            AesCipherMode,
             SymmetricCryptableWithAead,
             SymmetricCryptableWithTag,
         },

@@ -2,23 +2,28 @@
 ///
 ///
 
-mod api;
-mod crypter;
-mod decrypter;
-mod encrypter;
-mod types;
-mod util;
+pub mod api;
+pub mod crypter;
+pub mod decrypter;
+pub mod encrypter;
+pub mod types;
+pub mod util;
 
+/*
 pub use api::{
     decryptable::Decryptable,
     encryptable::Encryptable,
     algorithm::Algorithm,
     asymmetric::AsymmetricKey,
+    aes::AesSymmetricKey,
+    rsa::RsaAsymmetricKey,
+    key::Key,
     symmetric::{
         SymmetricKey,
         AesCipherMode,
     },
-};
+}
+*/
 
 pub use decrypter::{
     Decrypter,
@@ -35,7 +40,7 @@ pub use util::load_aes_key;
 
 #[derive(Clone, Debug)]
 pub struct AesOpts {
-    pub mode: Option<AesCipherMode>,
+    pub mode: Option<api::aes::AesCipherMode>,
 }
 
 #[derive(Clone, Debug)]
@@ -44,16 +49,13 @@ pub struct RsaOpts {
 
 #[derive(Clone, Debug)]
 pub struct CryptOpts {
-    pub algorithm: Option<Algorithm>,
+    pub algorithm: Option<api::algorithm::Algorithm>,
     pub aes: Option<AesOpts>,
     pub rsa: Option<RsaOpts>
 }
 
 impl CryptOpts {
-    pub fn new() -> Self {
-        CryptOpts { algorithm: None, aes: None, rsa: None }
-    }
-    pub fn algorithm_ref(&self) -> &Algorithm {
+    pub fn algorithm_ref(&self) -> &api::algorithm::Algorithm {
         self.algorithm.as_ref().unwrap()
     }
     pub fn aes_ref(&self) -> &Option<AesOpts> {

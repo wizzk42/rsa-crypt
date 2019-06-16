@@ -6,7 +6,7 @@ use openssl::symm::Cipher;
 
 use crate::crypt::api::{
     ciphermodes::CipherBlockMode,
-    symmetric::{
+    aes::{
         AesCipherMode,
         AesVariant,
     },

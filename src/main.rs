@@ -2,18 +2,16 @@
 ///
 ///
 
-use std::{
-    str::FromStr,
-};
+use std::str::FromStr;
 
 extern crate structopt;
 use structopt::StructOpt;
 
 extern crate rsa_crypt;
 use crate::rsa_crypt::{
+    crypt,
     hash,
     kdf,
-    crypt,
     util,
 };
 
@@ -32,19 +30,45 @@ enum CommandLineArguments {
 
 #[derive(Clone, Debug, StructOpt)]
 #[structopt(name = "crypt_cli", about = "crypt command options")]
+#[allow(non_snake_case)]
 struct CryptCommandLine {
     #[structopt(short = "a", long = "algorithm")]
     pub algorithm: String,
-     #[structopt(short = "p", long = "passphrase")]
+    #[structopt(short = "p", long = "passphrase")]
     pub passphrase: String,
-     #[structopt(short = "b", long = "base64")]
+    #[structopt(short = "b", long = "base64")]
     pub base64: bool,
-     #[structopt(short = "k", long = "keyfile")]
+    #[structopt(short = "k", long = "keyfile")]
     pub keyfile: String,
-     #[structopt(short = "i", long = "input")]
+    #[structopt(short = "i", long = "input")]
     pub input: String,
-     #[structopt(short = "o", long = "output")]
+    #[structopt(short = "o", long = "output")]
     pub output: String,
+    #[structopt(long = "aes")]
+    pub aesCipherMode: String,
+    #[structopt(long = "aead")]
+    pub aead: String,
+}
+
+impl CryptCommandLine {
+    pub fn to_crypt_opts(&self, _algorithm: &crypt::api::algorithm::Algorithm) -> crypt::CryptOpts {
+        let mut res: crypt::CryptOpts = crypt::CryptOpts {
+            algorithm: Some(_algorithm.clone()),
+            aes: None,
+            rsa: None,
+        };
+        match _algorithm {
+            crypt::api::algorithm::Algorithm::Aes => {
+                let aes: crypt::AesOpts = crypt::AesOpts {
+                    mode: crypt::api::aes::AesCipherMode::from_str(&self.aesCipherMode.as_str()).ok()
+                };
+                res.aes = Some(aes);
+            },
+            crypt::api::algorithm::Algorithm::Rsa => {
+            }
+        };
+        res
+    }
 }
 
 #[derive(Clone, Debug, StructOpt)]
@@ -73,22 +97,39 @@ impl KdfCommandLine {
         p
     }
 }
+fn load_key(_keyfile: &str) -> Vec<u8> {
+    vec![]
+}
 
 fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
 
-    // use crypt::Encryptable;
+    use crypt::api::encryptable::Encryptable;
+    let opts: crypt::CryptOpts = _cli.to_crypt_opts(&crypt::api::algorithm::Algorithm::from_str(&_cli.algorithm).unwrap());
+    let params: crypt::CryptParams = crypt::CryptParams::new();
 
-    // let mut opts: crypt::CryptOpts = crypt::CryptOpts::new();
 
-    let res = match crypt::Algorithm::from_str(_cli.algorithm.as_str()) {
-        Ok(crypt::Algorithm::Aes) => {
-            0
+    let mut ciphertext: Vec<u8> = vec![];
+    let plaintext: Vec<u8> = vec![];
+
+    let res = match crypt::api::algorithm::Algorithm::from_str(_cli.algorithm.as_str()) {
+        Ok(crypt::api::algorithm::Algorithm::Aes) => {
+            let keydata: Vec<u8> = load_key(&_cli.keyfile);
+            let ivdata: Vec<u8> = vec![];
+            let saltdata: Vec<u8> = vec![0xde,0xad,0xbe, 0xef];
+            let key: crypt::api::key::Key<crypt::api::aes::AesSymmetricKey> = crypt::api::key::Key::new(&crypt::api::aes::AesSymmetricKey::new(&keydata, &ivdata, &saltdata));
+            let encrypter: crypt::encrypter::Encrypter<crypt::encrypter::aes::AesEncrypter> = crypt::encrypter::Encrypter::new(&key, &opts);
+            let size = encrypter.encrypt(&plaintext, &mut ciphertext, &params);
+            size
         },
-        Ok(crypt::Algorithm::Rsa) => {
-            0
+        Ok(crypt::api::algorithm::Algorithm::Rsa) => {
+            let keydata: Vec<u8> = load_key(&_cli.keyfile);
+            let key: crypt::api::key::Key<crypt::api::rsa::RsaAsymmetricKey> = crypt::api::key::Key::new(&crypt::api::rsa::RsaAsymmetricKey::new(&keydata));
+            let encrypter: crypt::encrypter::Encrypter<crypt::encrypter::rsa::RsaEncrypter> = crypt::encrypter::Encrypter::new(&key, &opts);
+            let size = encrypter.encrypt(&plaintext, &mut ciphertext, &params);
+            size
         },
         Err(()) => {
-            -1
+            0
         },
     };
 
@@ -100,19 +141,35 @@ fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
 }
 
 fn cmd_decrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
-    use crypt::Decryptable;
+    use crypt::api::decryptable::Decryptable;
 
-    let mut opts: crypt::CryptOpts = crypt::CryptOpts::new();
+    let opts: crypt::CryptOpts = _cli.to_crypt_opts(&crypt::api::algorithm::Algorithm::from_str(&_cli.algorithm).unwrap());
+    let params: crypt::CryptParams = crypt::CryptParams::new();
 
-    let res = match crypt::Algorithm::from_str(_cli.algorithm.as_str()) {
-        Ok(crypt::Algorithm::Aes) => {
-            0
+    let ciphertext: Vec<u8> = vec![];
+    let mut plaintext: Vec<u8> = vec![];
+
+    let res = match crypt::api::algorithm::Algorithm::from_str(_cli.algorithm.as_str()) {
+        Ok(crypt::api::algorithm::Algorithm::Aes) => {
+
+            let keydata: Vec<u8> = load_key(&_cli.keyfile);
+            let ivdata: Vec<u8> = vec![];
+            let saltdata: Vec<u8> = vec![0xde,0xad,0xbe, 0xef];
+
+            let key: crypt::api::key::Key<crypt::api::aes::AesSymmetricKey> = crypt::api::key::Key::new(&crypt::api::aes::AesSymmetricKey::new(&keydata, &ivdata, &saltdata));
+            let decrypter: crypt::decrypter::Decrypter<crypt::AesDecrypter> = crypt::decrypter::Decrypter::new(&key, &opts);
+            let size = decrypter.decrypt(&mut plaintext, &ciphertext, &params);
+            size
         },
-        Ok(crypt::Algorithm::Rsa) => {
-            0
+        Ok(crypt::api::algorithm::Algorithm::Rsa) => {
+            let keydata: Vec<u8> = load_key(&_cli.keyfile);
+            let key: crypt::api::key::Key<crypt::api::rsa::RsaAsymmetricKey> = crypt::api::key::Key::new(&crypt::api::rsa::RsaAsymmetricKey::new(&keydata));
+            let decrypter: crypt::decrypter::Decrypter<crypt::decrypter::rsa::RsaDecrypter> = crypt::decrypter::Decrypter::new(&key, &opts);
+            let size = decrypter.decrypt(&mut plaintext, &ciphertext, &params);
+            size
         },
         Err(()) => {
-            -1
+            0
         },
     };
 
