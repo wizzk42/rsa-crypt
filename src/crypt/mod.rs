@@ -75,6 +75,12 @@ pub struct CryptParams {
 
 impl CryptParams {
     pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl Default for CryptParams {
+    fn default() -> Self {
         CryptParams {
             base64: false,
             passphrase: None,

@@ -2,7 +2,7 @@
 ///
 ///
 
-pub fn load_aes_key(_data: &Vec<u8>) -> (&str, &str, &str) {
+pub fn load_aes_key(_data: &[u8]) -> (&str, &str, &str) {
     let mut key: &str = "";
     let mut iv: &str = "";
     let mut salt: &str = "";

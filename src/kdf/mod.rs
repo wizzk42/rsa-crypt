@@ -2,17 +2,17 @@
 ///
 ///
 
-pub mod kdf;
+mod derivators;
 
 use crate::util::hexdata;
 
-pub use kdf::generate;
+pub use derivators::generate;
 
 use super::hash::Hash;
 use std::str::FromStr;
 
 const DEFAULT_SALT: &[u8] = &[0x05, 0x04, 0x01, 0x07];
-const DEFAULT_ITER: usize = 128000;
+const DEFAULT_ITER: usize = 128_000;
 const DEFAULT_MAX_THREADS: usize = 1;
 const DEFAULT_MAX_MEM: usize = 1024 * 1024 * 1024;
 
@@ -50,6 +50,12 @@ pub struct KeyDerivationParameters {
 
 impl KeyDerivationParameters {
     pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl Default for KeyDerivationParameters {
+    fn default() -> Self {
         KeyDerivationParameters {
             algorithm: Algorithm::None,
             hash: Hash::Sha3_512,

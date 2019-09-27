@@ -33,7 +33,7 @@ impl FromStr for AesCipherMode {
     type Err = ();
 
     fn from_str(_s: &str) -> Result<AesCipherMode, ()> {
-        return match _s {
+        match _s {
             "aes-128-cbc" => Ok(AesCipherMode::Aes128Cbc(AesVariant::Aes128, CipherBlockMode::Cbc)),
             "aes-128-ccm" => Ok(AesCipherMode::Aes128Ccm(AesVariant::Aes128, CipherBlockMode::Ccm)),
             "aes-128-ctr" => Ok(AesCipherMode::Aes128Ctr(AesVariant::Aes128, CipherBlockMode::Ctr)),
@@ -45,6 +45,6 @@ impl FromStr for AesCipherMode {
             "aes-256-gcm" => Ok(AesCipherMode::Aes128Ccm(AesVariant::Aes256, CipherBlockMode::Gcm)),
             "aes-256-xts" => Ok(AesCipherMode::Aes128Ccm(AesVariant::Aes256, CipherBlockMode::Xts)),
             _ => Err(()),
-        };
+        }
     }
 }

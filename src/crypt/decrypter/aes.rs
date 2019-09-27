@@ -47,15 +47,20 @@ impl Decryptable<AesSymmetricKey> for AesDecrypter {
     fn new(_key: &Key<AesSymmetricKey>, _opts: &CryptOpts) -> Self {
         AesDecrypter {
             key: _key.clone(),
-            cipher: _opts.clone().aes.unwrap().mode.unwrap_or(AesCipherMode::Aes128Gcm(AesVariant::Aes128, CipherBlockMode::Gcm)),
+            cipher: _opts.clone()
+                .aes.unwrap().mode.unwrap_or(
+                    AesCipherMode::Aes128Gcm(
+                        AesVariant::Aes128,
+                        CipherBlockMode::Gcm
+                    )),
             aead: None,
             tag_buffer_size: 32,
         }
     }
-    fn decrypt(&self, _plaintext: &mut Vec<u8>, _ciphertext: &Vec<u8>, _params: &CryptParams) -> usize {
+    fn decrypt(&self, _plaintext: &mut Vec<u8>, _ciphertext: &[u8], _params: &CryptParams) -> usize {
         let mut splitted_ciphertext = _ciphertext.splitn(
             2,
-            |c: &u8| { *c == ':' as u8 },
+            |c: &u8| { *c == b':' },
         );
 
         let mut _effective_ciphertext = splitted_ciphertext.next().unwrap();

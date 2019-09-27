@@ -51,12 +51,12 @@ impl Encryptable<AesSymmetricKey> for AesEncrypter {
             }).unwrap();
         AesEncrypter {
             key: _key.clone(),
-            cipher: cipher,
+            cipher,
             aead: None,
             tag_buffer_size: 32
         }
     }
-    fn encrypt(&self, _plaintext: &Vec<u8>, _ciphertext: &mut Vec<u8>, _params: &CryptParams) -> usize {
+    fn encrypt(&self, _plaintext: &[u8], _ciphertext: &mut Vec<u8>, _params: &CryptParams) -> usize {
         let mut tag_buffer = vec![0; self.tag_buffer_size];
         _ciphertext.clear();
         _ciphertext.append(
@@ -82,7 +82,7 @@ impl Encryptable<AesSymmetricKey> for AesEncrypter {
             }.unwrap().as_mut()
         );
         if !tag_buffer.is_empty() {
-            _ciphertext.push(':' as u8);
+            _ciphertext.push(b':');
             _ciphertext.append(tag_buffer.as_mut());
         }
         _ciphertext.len()

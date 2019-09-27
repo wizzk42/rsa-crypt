@@ -16,7 +16,7 @@ use super::{
     KeyDerivationParameters,
 };
 
-pub fn generate(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
+pub fn generate(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Vec<u8>, ErrorStack> {
     match _params.algorithm {
         Algorithm::None => panic!("No algorithm selected"),
         Algorithm::Pbkdf2 => pbkdf2(_params, _opts),
@@ -25,7 +25,7 @@ pub fn generate(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) 
     }
 }
 
-fn pbkdf2(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
+fn pbkdf2(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Vec<u8>, ErrorStack> {
     let mut _key: Vec<u8> = Vec::new();
     _key.resize(_params.hash.size(), 0x00);
     match pbkdf2_hmac(
@@ -36,18 +36,18 @@ fn pbkdf2(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Res
         &mut _key,
     ) {
         Err(err) => Err(err),
-        Ok(_) => Ok(Box::new(_key)),
+        Ok(_) => Ok(_key),
     }
 }
 
-fn argon2i(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
+fn argon2i(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Vec<u8>, ErrorStack> {
     let _key: Vec<u8> = Vec::new();
-    Ok(Box::new(_key))
+    Ok(_key)
 }
 
-fn argon2d(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Box<Vec<u8>>, ErrorStack> {
+fn argon2d(_params: &KeyDerivationParameters, _opts: &[KeyDerivationOpts]) -> Result<Vec<u8>, ErrorStack> {
     let _key: Vec<u8> = Vec::new();
-    Ok(Box::new(_key))
+    Ok(_key)
 }
 
 fn select_message_digest(_hash: &Hash) -> MessageDigest {

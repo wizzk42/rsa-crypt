@@ -33,7 +33,7 @@ impl Encryptable<RsaAsymmetricKey> for RsaEncrypter {
     fn new(_key: &Key<RsaAsymmetricKey>, _opts: &CryptOpts) -> Self {
         RsaEncrypter { key: _key.to_owned() }
     }
-    fn encrypt(&self, _plaintext: &Vec<u8>, _ciphertext: &mut Vec<u8>, _params: &CryptParams) -> usize {
+    fn encrypt(&self, _plaintext: &[u8], _ciphertext: &mut Vec<u8>, _params: &CryptParams) -> usize {
         match self.load_public_key() {
             Some(k) => {
                 _ciphertext.resize(k.size() as usize, 0);

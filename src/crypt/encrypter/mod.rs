@@ -26,7 +26,7 @@ impl<Algorithm, KeyType> Encryptable<KeyType> for Encrypter<Algorithm> where Alg
     fn new(_key: &Key<KeyType>, _opts: &CryptOpts) -> Encrypter<Algorithm> {
         Encrypter { encrypter: Algorithm::new(_key, _opts) }
     }
-    fn encrypt(&self, _plaintext: &Vec<u8>, _ciphertext: &mut Vec<u8>, _params: &CryptParams) -> usize {
+    fn encrypt(&self, _plaintext: &[u8], _ciphertext: &mut Vec<u8>, _params: &CryptParams) -> usize {
         self.encrypter.encrypt(_plaintext, _ciphertext, _params)
     }
 }

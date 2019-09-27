@@ -5,6 +5,7 @@
 use std::str::FromStr;
 
 extern crate structopt;
+
 use structopt::StructOpt;
 
 extern crate rsa_crypt;
@@ -64,8 +65,7 @@ impl CryptCommandLine {
                 };
                 res.aes = Some(aes);
             },
-            crypt::api::algorithm::Algorithm::Rsa => {
-            }
+            crypt::api::algorithm::Algorithm::Rsa => {}
         };
         res
     }
@@ -118,15 +118,13 @@ fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
             let saltdata: Vec<u8> = vec![0xde,0xad,0xbe, 0xef];
             let key: crypt::api::key::Key<crypt::api::aes::AesSymmetricKey> = crypt::api::key::Key::new(&crypt::api::aes::AesSymmetricKey::new(&keydata, &ivdata, &saltdata));
             let encrypter: crypt::encrypter::Encrypter<crypt::encrypter::aes::AesEncrypter> = crypt::encrypter::Encrypter::new(&key, &opts);
-            let size = encrypter.encrypt(&plaintext, &mut ciphertext, &params);
-            size
+            encrypter.encrypt(&plaintext, &mut ciphertext, &params)
         },
         Ok(crypt::api::algorithm::Algorithm::Rsa) => {
             let keydata: Vec<u8> = load_key(&_cli.keyfile);
             let key: crypt::api::key::Key<crypt::api::rsa::RsaAsymmetricKey> = crypt::api::key::Key::new(&crypt::api::rsa::RsaAsymmetricKey::new(&keydata));
             let encrypter: crypt::encrypter::Encrypter<crypt::encrypter::rsa::RsaEncrypter> = crypt::encrypter::Encrypter::new(&key, &opts);
-            let size = encrypter.encrypt(&plaintext, &mut ciphertext, &params);
-            size
+            encrypter.encrypt(&plaintext, &mut ciphertext, &params)
         },
         Err(()) => {
             0
@@ -158,15 +156,13 @@ fn cmd_decrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
 
             let key: crypt::api::key::Key<crypt::api::aes::AesSymmetricKey> = crypt::api::key::Key::new(&crypt::api::aes::AesSymmetricKey::new(&keydata, &ivdata, &saltdata));
             let decrypter: crypt::decrypter::Decrypter<crypt::AesDecrypter> = crypt::decrypter::Decrypter::new(&key, &opts);
-            let size = decrypter.decrypt(&mut plaintext, &ciphertext, &params);
-            size
+            decrypter.decrypt(&mut plaintext, &ciphertext, &params)
         },
         Ok(crypt::api::algorithm::Algorithm::Rsa) => {
             let keydata: Vec<u8> = load_key(&_cli.keyfile);
             let key: crypt::api::key::Key<crypt::api::rsa::RsaAsymmetricKey> = crypt::api::key::Key::new(&crypt::api::rsa::RsaAsymmetricKey::new(&keydata));
             let decrypter: crypt::decrypter::Decrypter<crypt::decrypter::rsa::RsaDecrypter> = crypt::decrypter::Decrypter::new(&key, &opts);
-            let size = decrypter.decrypt(&mut plaintext, &ciphertext, &params);
-            size
+            decrypter.decrypt(&mut plaintext, &ciphertext, &params)
         },
         Err(()) => {
             0
@@ -190,7 +186,7 @@ fn cmd_password(_cli: &KdfCommandLine) -> Result<(), i32> {
         &opts.to_owned(),
     ) {
         Ok(res) => {
-            println!("{:?}", *res);
+            println!("{:?}", res);
             Ok(())
         }
         Err(err) => {

@@ -19,6 +19,7 @@ use crate::crypt::{
     },
 };
 
+#[allow(dead_code)]
 pub struct RsaDecrypter { key: Key<RsaAsymmetricKey>, opts: CryptOpts }
 
 impl RsaDecrypter {
@@ -33,7 +34,7 @@ impl Decryptable<RsaAsymmetricKey> for RsaDecrypter {
     fn new(_key: &Key<RsaAsymmetricKey>, _opts: &CryptOpts) -> Self {
         RsaDecrypter { key: _key.to_owned(), opts: _opts.to_owned() }
     }
-    fn decrypt(&self, _plaintext: &mut Vec<u8>, _ciphertext: &Vec<u8>, _params: &CryptParams) -> usize {
+    fn decrypt(&self, _plaintext: &mut Vec<u8>, _ciphertext: &[u8], _params: &CryptParams) -> usize {
         match self.load_rsa_private_key(&_params.passphrase) {
             Some(k) => {
                 _plaintext.resize(k.size() as usize, 0);
