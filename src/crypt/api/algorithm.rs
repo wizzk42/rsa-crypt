@@ -6,6 +6,7 @@ use std::str::FromStr;
 
 #[derive(Clone, Debug)]
 pub enum Algorithm {
+    None,
     Aes,
     Rsa,
 }
@@ -17,7 +18,7 @@ impl FromStr for Algorithm {
         match _s {
             "aes" => Ok(Algorithm::Aes),
             "rsa" => Ok(Algorithm::Rsa),
-            _ => Err(()),
+            _ => Ok(Algorithm::None),
         }
     }
 }

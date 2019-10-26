@@ -5,9 +5,7 @@
 use super::key::BaseKeyType;
 
 #[derive(Clone)]
-pub struct SymmetricKey<KeyDataType, IvDataType, SaltDataType>
-    where KeyDataType: Clone, IvDataType: Clone, SaltDataType: Clone {
-
+pub struct SymmetricKey<KeyDataType, IvDataType, SaltDataType> {
     key: KeyDataType,
     iv: IvDataType,
     salt: SaltDataType,

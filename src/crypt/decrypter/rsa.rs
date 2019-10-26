@@ -25,7 +25,8 @@ pub struct RsaDecrypter { key: Key<RsaAsymmetricKey>, opts: CryptOpts }
 impl RsaDecrypter {
     fn load_rsa_private_key(&self, _passphrase: &Option<Vec<u8>>) -> Option<Rsa<Private>> {
         Rsa::private_key_from_pem_passphrase(
-            self.key.key_ref().key_ref(), _passphrase.as_ref().unwrap()
+            self.key.key_ref().key_ref(),
+            _passphrase.as_ref().unwrap(),
         ).ok()
     }
 }
@@ -42,7 +43,7 @@ impl Decryptable<RsaAsymmetricKey> for RsaDecrypter {
                     .unwrap();
                 _plaintext.retain(|&i| i > 0);
                 size
-            },
+            }
             None => 0,
         }
     }

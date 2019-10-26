@@ -9,7 +9,8 @@ pub struct AsymmetricKey<KeyDataType: Clone> {
     key: KeyDataType,
 }
 
-impl<KeyDataType> AsymmetricKey<KeyDataType> where KeyDataType: Clone {
+impl<KeyDataType> AsymmetricKey<KeyDataType>
+        where KeyDataType: Clone {
     pub fn new(_key: &KeyDataType) -> Self {
         AsymmetricKey { key: _key.clone() }
     }

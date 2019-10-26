@@ -15,15 +15,10 @@ use crate::crypt::{
         aes::{
             AesCipherMode,
             AesSymmetricKey,
-            AesVariant,
         },
-        ciphermodes::CipherBlockMode,
         key::Key,
         decryptable::Decryptable,
-        symmetric::{
-            SymmetricCryptableWithAead,
-            SymmetricCryptableWithTag,
-        },
+        symmetric::SymmetricCryptableWithTag,
     },
     crypter::aes::CipherChooser,
 };
@@ -31,7 +26,6 @@ use crate::crypt::{
 pub struct AesDecrypter {
     key: Key<AesSymmetricKey>,
     cipher: AesCipherMode,
-    aead: Option<Vec<u8>>,
     tag_buffer_size: usize,
 }
 
@@ -49,11 +43,8 @@ impl Decryptable<AesSymmetricKey> for AesDecrypter {
             key: _key.clone(),
             cipher: _opts.clone()
                 .aes.unwrap().mode.unwrap_or(
-                    AesCipherMode::Aes128Gcm(
-                        AesVariant::Aes128,
-                        CipherBlockMode::Gcm
-                    )),
-            aead: None,
+                    AesCipherMode::Aes128Gcm
+                ),
             tag_buffer_size: 32,
         }
     }
@@ -66,38 +57,30 @@ impl Decryptable<AesSymmetricKey> for AesDecrypter {
         let mut _effective_ciphertext = splitted_ciphertext.next().unwrap();
         let mut _effective_tagbuffer = splitted_ciphertext.next().unwrap_or(&[0]);
 
-        //let mut tag_buffer = ;
         _plaintext.clear();
-        _plaintext.append(
-            match self.aead {
-                Some(_) => {
-                    decrypt_aead(
-                        self.choose_cipher_fn(),
-                        &self.key.key_ref().key_clone(),
-                        Some(&self.key.key_ref().iv_clone()),
-                        self.aead.as_ref().unwrap(),
-                        &_plaintext,
-                        &_effective_tagbuffer,
-                    )
-                }
-                None => {
-                    decrypt(
-                        self.choose_cipher_fn(),
-                        &self.key.key_ref().key_clone(),
-                        Option::Some(&self.key.key_ref().iv_clone()),
-                        &_ciphertext,
-                    )
-                }
-            }.unwrap().as_mut()
-        );
-        _plaintext.len()
-    }
-}
 
-impl SymmetricCryptableWithAead for AesDecrypter {
-    fn aead(&mut self, _aead: &Option<Vec<u8>>) -> &Self {
-        self.aead = _aead.to_owned();
-        self
+        let res = match _params.aead {
+            Some(_) => {
+                decrypt_aead(
+                    self.choose_cipher_fn(),
+                    &self.key.key_ref().key_clone(),
+                    Some(&self.key.key_ref().iv_clone()),
+                    _params.aead.as_ref().unwrap(),
+                    &_plaintext,
+                    &_effective_tagbuffer,
+                )
+            },
+            None => {
+                decrypt(
+                    self.choose_cipher_fn(),
+                    &self.key.key_ref().key_clone(),
+                    Option::Some(&self.key.key_ref().iv_clone()),
+                    &_ciphertext,
+                )
+            }
+        };
+        _plaintext.append(res.unwrap_or_else(|_| vec![]).as_mut());
+        _plaintext.len()
     }
 }
 
