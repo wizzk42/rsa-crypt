@@ -74,17 +74,15 @@ fn test_aes_encrypt_decrypt_roundtrip() {
         &crypt_params,
     );
     assert!(ciphertext_len > 0);
-
-    println!("TEST: {:?}", ciphertext_len);
-    println!("TEST: {:?}", ciphertext);
+    assert!(ciphertext.len() == ciphertext_len);
 
     let mut decrypted_plaintext: Vec<u8> = Vec::new();
     let aes_decrypter: Decrypter<AesDecrypter> = Decrypter::new(&key, &crypt_opts);
     let plaintext_len: usize =
         aes_decrypter.decrypt(&mut decrypted_plaintext, &ciphertext, &crypt_params);
 
-    println!("TEST: {:?}", plaintext_len);
-    println!("TEST: {:?}", decrypted_plaintext);
+    println!("PTL TEST: {:?}", plaintext_len);
+    println!("PTT TEST: {:?}", decrypted_plaintext);
 
     assert!(plaintext_len > 0);
     assert_eq!(plaintext.as_bytes().to_vec(), decrypted_plaintext);

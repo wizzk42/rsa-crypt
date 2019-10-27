@@ -4,7 +4,7 @@
 
 use crate::crypt::{CryptOpts,CryptParams};
 
-pub trait BaseKeyType {}
+pub trait BaseKeyType: Sized {}
 
 #[derive(Clone)]
 pub struct Key<KeyType: Clone + BaseKeyType> (KeyType);

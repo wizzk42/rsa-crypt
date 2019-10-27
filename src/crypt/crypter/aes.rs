@@ -23,4 +23,31 @@ pub trait CipherChooser {
             _ => Cipher::aes_256_gcm()
         }
     }
+
+    fn supports_aead(&self) -> bool {
+        match self.cipher() {
+            AesCipherMode::Aes128Cbc |
+            AesCipherMode::Aes128Ctr |
+            AesCipherMode::Aes256Cbc |
+            AesCipherMode::Aes256Ctr |
+            AesCipherMode::Aes128Xts |
+            AesCipherMode::Aes256Xts => false,
+            AesCipherMode::Aes128Ccm |
+            AesCipherMode::Aes128Gcm |
+            AesCipherMode::Aes256Ccm |
+            AesCipherMode::Aes256Gcm => true
+        }
+    }
+
+    fn block_size_hint(&self) -> usize {
+        self.choose_cipher_fn().block_size()
+    }
+
+    fn key_len_hint(&self) -> usize {
+        self.choose_cipher_fn().key_len()
+    }
+
+    fn iv_len_hint(&self) -> Option<usize> {
+        self.choose_cipher_fn().iv_len()
+    }
 }

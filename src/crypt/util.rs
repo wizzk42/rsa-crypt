@@ -15,7 +15,7 @@ pub fn load_aes_key(_data: &[u8]) -> (Vec<u8>,  Vec<u8>, Vec<u8>) {
         ).unwrap();
         let v: &str = std::str::from_utf8(
             line.splitn(2, |c| *c as char == '=')
-                .next()
+                .last()
                 .unwrap()
         ).unwrap();
         match k.trim() {
