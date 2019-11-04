@@ -62,13 +62,13 @@ impl Decryptable<AesSymmetricKey> for AesDecrypter {
         let res: Result<Vec<u8>, _>;
 
         if self.key_len_hint() > self.key.key_ref().key_ref().len() {
-            _plaintext.append("invalid key length".as_bytes().to_vec().as_mut());
+            _plaintext.append(b"invalid key length".to_vec().as_mut());
             return 0;
         }
 
         if (self.iv_len_hint().is_none() || self.iv_len_hint() > Some(0))
              && self.iv_len_hint() > Some(self.key.key_ref().iv_ref().len()) {
-            _plaintext.append("invalid iv length".as_bytes().to_vec().as_mut());
+            _plaintext.append(b"invalid iv length".to_vec().as_mut());
             return 0
         }
 

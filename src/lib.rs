@@ -2,16 +2,21 @@
 ///
 ///
 
-mod crypt;
+pub mod crypt;
 pub mod hash;
 pub mod kdf;
-mod util;
+pub mod util;
 
 pub use crate::{
     crypt::{
         api::{
             algorithm::Algorithm,
             key::Key,
+            keyitem::{
+                AsymmetricKey,
+                KeyItem,
+                SymmetricKey
+            },
             aes::{
                 AesCipherMode,
                 AesSymmetricKey

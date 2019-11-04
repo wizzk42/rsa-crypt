@@ -13,6 +13,7 @@ openssl = "^0.10.20"
 hex = "^0.3.2"
 clap = { version = "~2.33.0", features = ["suggestions", "color", "yaml"] }
 structopt = "~0.2.15"
+rand = "~0.7.2"
 
 [dev-dependencies]
 pretty_assertions = "^0.4.0"

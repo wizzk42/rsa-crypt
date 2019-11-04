@@ -191,7 +191,7 @@ fn cmd_password(_cli: &KdfCommandLine) -> Result<(), i32> {
 
     match kdf::generate(
         &_cli.to_key_derivation_parameters(),
-        &opts.to_owned(),
+        &opts,
     ) {
         Ok(res) => {
             println!("{:?}", res);
