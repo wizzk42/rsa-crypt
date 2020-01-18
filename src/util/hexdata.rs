@@ -1,7 +1,6 @@
 ///
 ///
 ///
-
 use std::str::FromStr;
 
 #[derive(Clone, Debug)]
@@ -11,7 +10,7 @@ impl HexVec {
     pub fn from_hex(_s: &str) -> Self {
         HexVec(hex::decode(_s).unwrap())
     }
-    pub fn from_bytes(_b : Vec<u8>) -> Self {
+    pub fn from_bytes(_b: Vec<u8>) -> Self {
         HexVec(_b)
     }
     pub fn empty() -> Self {

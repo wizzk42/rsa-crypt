@@ -1,7 +1,6 @@
 ///
 ///
 ///
-
 use super::key::BaseKeyType;
 
 #[derive(Clone)]
@@ -10,7 +9,9 @@ pub struct AsymmetricKey<KeyDataType: Clone> {
 }
 
 impl<KeyDataType> AsymmetricKey<KeyDataType>
-        where KeyDataType: Clone {
+where
+    KeyDataType: Clone,
+{
     pub fn new(_key: &KeyDataType) -> Self {
         AsymmetricKey { key: _key.clone() }
     }

@@ -1,13 +1,12 @@
 ///
 ///
 ///
-
 use std::str::FromStr;
 
 use super::symmetric::SymmetricKey;
 use super::ciphermodes::CipherBlockMode;
 
-pub type AesSymmetricKey=SymmetricKey<Vec<u8>, Vec<u8>, Vec<u8>>;
+pub type AesSymmetricKey = SymmetricKey<Vec<u8>, Vec<u8>, Vec<u8>>;
 
 #[derive(Clone, Debug)]
 pub enum AesVariant {
@@ -26,22 +25,22 @@ pub enum AesCipherMode {
     Aes256Ccm,
     Aes256Ctr,
     Aes256Gcm,
-    Aes256Xts
+    Aes256Xts,
 }
 
 impl AesCipherMode {
     pub fn variant(&self) -> AesVariant {
         match self {
-            Self::Aes128Cbc |
-            Self::Aes128Ccm |
-            Self::Aes128Ctr |
-            Self::Aes128Gcm |
-            Self::Aes128Xts => AesVariant::Aes128,
-            Self::Aes256Cbc |
-            Self::Aes256Ccm |
-            Self::Aes256Ctr |
-            Self::Aes256Gcm |
-            Self::Aes256Xts => AesVariant::Aes256
+            Self::Aes128Cbc
+            | Self::Aes128Ccm
+            | Self::Aes128Ctr
+            | Self::Aes128Gcm
+            | Self::Aes128Xts => AesVariant::Aes128,
+            Self::Aes256Cbc
+            | Self::Aes256Ccm
+            | Self::Aes256Ctr
+            | Self::Aes256Gcm
+            | Self::Aes256Xts => AesVariant::Aes256,
         }
     }
     pub fn blockmode(&self) -> CipherBlockMode {
@@ -55,7 +54,7 @@ impl AesCipherMode {
             Self::Aes256Ccm => CipherBlockMode::Ccm,
             Self::Aes256Ctr => CipherBlockMode::Ctr,
             Self::Aes256Gcm => CipherBlockMode::Gcm,
-            Self::Aes256Xts => CipherBlockMode::Xts
+            Self::Aes256Xts => CipherBlockMode::Xts,
         }
     }
 }

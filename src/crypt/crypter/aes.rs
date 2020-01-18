@@ -7,7 +7,6 @@ use openssl::symm::Cipher;
 use crate::crypt::api::aes::AesCipherMode;
 
 pub trait CipherChooser {
-
     fn cipher(&self) -> &AesCipherMode;
 
     fn choose_cipher_fn(&self) -> Cipher {
@@ -20,22 +19,22 @@ pub trait CipherChooser {
             AesCipherMode::Aes256Ctr => Cipher::aes_256_ctr(),
             AesCipherMode::Aes256Gcm => Cipher::aes_256_gcm(),
             AesCipherMode::Aes256Xts => Cipher::aes_256_xts(),
-            _ => Cipher::aes_256_gcm()
+            _ => Cipher::aes_256_gcm(),
         }
     }
 
     fn supports_aead(&self) -> bool {
         match self.cipher() {
-            AesCipherMode::Aes128Cbc |
-            AesCipherMode::Aes128Ctr |
-            AesCipherMode::Aes256Cbc |
-            AesCipherMode::Aes256Ctr |
-            AesCipherMode::Aes128Xts |
-            AesCipherMode::Aes256Xts => false,
-            AesCipherMode::Aes128Ccm |
-            AesCipherMode::Aes128Gcm |
-            AesCipherMode::Aes256Ccm |
-            AesCipherMode::Aes256Gcm => true
+            AesCipherMode::Aes128Cbc
+            | AesCipherMode::Aes128Ctr
+            | AesCipherMode::Aes256Cbc
+            | AesCipherMode::Aes256Ctr
+            | AesCipherMode::Aes128Xts
+            | AesCipherMode::Aes256Xts => false,
+            AesCipherMode::Aes128Ccm
+            | AesCipherMode::Aes128Gcm
+            | AesCipherMode::Aes256Ccm
+            | AesCipherMode::Aes256Gcm => true,
         }
     }
 

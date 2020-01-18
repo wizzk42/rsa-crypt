@@ -1,15 +1,17 @@
 ///
 ///
 ///
-
-use crate::crypt::{CryptOpts,CryptParams};
+use crate::crypt::{CryptOpts, CryptParams};
 
 pub trait BaseKeyType: Sized {}
 
 #[derive(Clone)]
-pub struct Key<KeyType: Clone + BaseKeyType> (KeyType);
+pub struct Key<KeyType: Clone + BaseKeyType>(KeyType);
 
-impl<KeyType> Key<KeyType> where KeyType: Clone + BaseKeyType {
+impl<KeyType> Key<KeyType>
+where
+    KeyType: Clone + BaseKeyType,
+{
     pub fn new(_data: &KeyType) -> Self {
         Key(_data.clone())
     }
@@ -22,7 +24,11 @@ impl<KeyType> Key<KeyType> where KeyType: Clone + BaseKeyType {
 }
 impl<KeyType> BaseKeyType for Key<KeyType> where KeyType: Clone + BaseKeyType {}
 
-pub trait Decryptable<KeyType> where KeyType: Clone + BaseKeyType {
+pub trait Decryptable<KeyType>
+where
+    KeyType: Clone + BaseKeyType,
+{
     fn new(_key: &Key<KeyType>, _opts: &CryptOpts) -> Self;
-    fn decrypt(&self, _plaintext: &mut Vec<u8>, _ciphertext: &[u8], _params: &CryptParams) -> usize;
+    fn decrypt(&self, _plaintext: &mut Vec<u8>, _ciphertext: &[u8], _params: &CryptParams)
+        -> usize;
 }

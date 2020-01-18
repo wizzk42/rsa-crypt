@@ -29,7 +29,10 @@ impl CipherChooser for AesEncrypter {
 }
 
 impl Encryptable<AesSymmetricKey> for AesEncrypter {
-    fn new(_key: &Key<AesSymmetricKey>, _opts: &CryptOpts) -> Self {
+    fn new(
+        _key: &Key<AesSymmetricKey>,
+        _opts: &CryptOpts,
+    ) -> Self {
         let cipher = _opts
             .clone()
             .aes
@@ -57,16 +60,16 @@ impl Encryptable<AesSymmetricKey> for AesEncrypter {
 
         let res: Result<Vec<u8>, _>;
 
-
         if self.key_len_hint() > self.key.key_ref().key_ref().len() {
             _ciphertext.append(b"invalid key length".to_vec().as_mut());
             return 0;
         }
 
         if (self.iv_len_hint().is_none() || self.iv_len_hint() > Some(0))
-             && self.iv_len_hint() > Some(self.key.key_ref().iv_ref().len()) {
+            && self.iv_len_hint() > Some(self.key.key_ref().iv_ref().len())
+        {
             _ciphertext.append(b"invalid iv length".to_vec().as_mut());
-            return 0
+            return 0;
         }
 
         if self.supports_aead() {
@@ -86,10 +89,13 @@ impl Encryptable<AesSymmetricKey> for AesEncrypter {
                 &_plaintext,
             );
         }
-        _ciphertext.append(res.unwrap_or_else(|r| {
-            print!("{:?}", r);
-            vec![]
-        }).as_mut());
+        _ciphertext.append(
+            res.unwrap_or_else(|r| {
+                print!("{:?}", r);
+                vec![]
+            })
+            .as_mut(),
+        );
 
         if !tag_buffer.is_empty() {
             _ciphertext.push(b':');
@@ -100,7 +106,10 @@ impl Encryptable<AesSymmetricKey> for AesEncrypter {
 }
 
 impl SymmetricCryptableWithTag for AesEncrypter {
-    fn tag_buffer_size(&mut self, _tag_buffer_size: usize) -> &Self {
+    fn tag_buffer_size(
+        &mut self,
+        _tag_buffer_size: usize,
+    ) -> &Self {
         self.tag_buffer_size = _tag_buffer_size;
         self
     }

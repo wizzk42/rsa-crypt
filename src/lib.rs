@@ -1,7 +1,6 @@
 ///
 ///
 ///
-
 pub mod crypt;
 pub mod hash;
 pub mod kdf;
@@ -12,40 +11,14 @@ pub use crate::{
         api::{
             algorithm::Algorithm,
             key::Key,
-            keyitem::{
-                AsymmetricKey,
-                KeyItem,
-                SymmetricKey
-            },
-            aes::{
-                AesCipherMode,
-                AesSymmetricKey
-            },
+            keyitem::{AsymmetricKey, KeyItem, SymmetricKey},
+            aes::{AesCipherMode, AesSymmetricKey},
             rsa::RsaAsymmetricKey,
         },
-        decrypter::{
-            Decryptable,
-            Decrypter,
-            aes::AesDecrypter,
-            rsa::RsaDecrypter
-        },
-        encrypter::{
-            Encryptable,
-            Encrypter,
-            aes::AesEncrypter,
-            rsa::RsaEncrypter
-        },
-        util::{
-            load_aes_key,
-            load_rsa_key
-        },
-        AesOpts,
-        CryptParams,
-        CryptOpts,
+        decrypter::{Decryptable, Decrypter, aes::AesDecrypter, rsa::RsaDecrypter},
+        encrypter::{Encryptable, Encrypter, aes::AesEncrypter, rsa::RsaEncrypter},
+        util::{load_aes_key, load_rsa_key},
+        AesOpts, CryptParams, CryptOpts,
     },
-    util::{
-        base64,
-        files::read_from_file,
-        hexdata::HexVec
-    }
+    util::{base64, files::read_from_file, hexdata::HexVec},
 };

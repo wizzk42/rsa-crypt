@@ -1,7 +1,6 @@
 ///
 ///
 ///
-
 use super::key::BaseKeyType;
 
 #[derive(Clone)]
@@ -12,9 +11,16 @@ pub struct SymmetricKey<KeyDataType, IvDataType, SaltDataType> {
 }
 
 impl<KeyDataType, IvDataType, SaltDataType> SymmetricKey<KeyDataType, IvDataType, SaltDataType>
-    where KeyDataType: Clone, IvDataType: Clone, SaltDataType: Clone {
-
-    pub fn new(_key: &KeyDataType, _iv: &IvDataType, _salt: &SaltDataType) -> Self {
+where
+    KeyDataType: Clone,
+    IvDataType: Clone,
+    SaltDataType: Clone,
+{
+    pub fn new(
+        _key: &KeyDataType,
+        _iv: &IvDataType,
+        _salt: &SaltDataType,
+    ) -> Self {
         SymmetricKey {
             key: _key.clone(),
             iv: _iv.clone(),
@@ -41,14 +47,25 @@ impl<KeyDataType, IvDataType, SaltDataType> SymmetricKey<KeyDataType, IvDataType
     }
 }
 
-impl<KeyDataType, IvDataType, SaltDataType> BaseKeyType for SymmetricKey<KeyDataType, IvDataType, SaltDataType>
-    where KeyDataType: Clone, IvDataType: Clone, SaltDataType: Clone {
+impl<KeyDataType, IvDataType, SaltDataType> BaseKeyType
+    for SymmetricKey<KeyDataType, IvDataType, SaltDataType>
+where
+    KeyDataType: Clone,
+    IvDataType: Clone,
+    SaltDataType: Clone,
+{
 }
 
 pub trait SymmetricCryptableWithTag {
-    fn tag_buffer_size(&mut self, _tag_buffer_size: usize) -> &Self;
+    fn tag_buffer_size(
+        &mut self,
+        _tag_buffer_size: usize,
+    ) -> &Self;
 }
 
 pub trait SymmetricCryptableWithAead {
-    fn aead(&mut self, _aead: &Option<Vec<u8>>) -> &Self;
+    fn aead(
+        &mut self,
+        _aead: &Option<Vec<u8>>,
+    ) -> &Self;
 }

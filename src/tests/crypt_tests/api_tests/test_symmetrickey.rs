@@ -6,23 +6,20 @@
 extern crate rsa_crypt;
 
 #[cfg(test)]
-use rsa_crypt::crypt::api::keyitem::{
-    SymmetricKey,
-    KeyTrait,
-    SymmetricKeyTrait
-};
+use rsa_crypt::crypt::api::keyitem::{SymmetricKey, KeyTrait, SymmetricKeyTrait};
 
+#[rustfmt::skip]
 const SAMPLE_KEY_8: [u8;4] = [0,2^7,2^7+1,2^8-1];
+
+#[rustfmt::skip]
 const SAMPLE_IV_8: [u8;4] = [0,2^7+1,2^7+2,2^8-1];
+
+#[rustfmt::skip]
 const SAMPLE_SALT_8: [u8;4] = [0xff, 0xfe, 0xfd, 0xfc];
 
 #[test]
-fn  test_init_8() {
-    let key: SymmetricKey<u8> = SymmetricKey::new(
-        &SAMPLE_KEY_8,
-        &SAMPLE_IV_8,
-        &SAMPLE_SALT_8
-    );
+fn test_init_8() {
+    let key: SymmetricKey<u8> = SymmetricKey::new(&SAMPLE_KEY_8, &SAMPLE_IV_8, &SAMPLE_SALT_8);
     assert!(key.key().is_some());
     assert!(key.iv().is_some());
     assert!(key.salt().is_some());
@@ -35,24 +32,19 @@ fn  test_init_8() {
 
 #[test]
 fn test_fluent_init_8() {
-
     let mut partial_key: SymmetricKey<u8> = SymmetricKey::with_key(&SAMPLE_KEY_8);
 
     assert!(partial_key.key().is_some());
     assert!(partial_key.iv().is_none());
     assert!(partial_key.salt().is_none());
 
-    let partial_key_with_iv = partial_key.and_iv(
-        &SAMPLE_IV_8
-    );
+    let partial_key_with_iv = partial_key.and_iv(&SAMPLE_IV_8);
 
     assert!(partial_key_with_iv.key().is_some());
     assert!(partial_key_with_iv.iv().is_some());
     assert!(partial_key_with_iv.salt().is_none());
 
-    let complete_key = partial_key_with_iv.and_salt(
-        &SAMPLE_SALT_8
-    );
+    let complete_key = partial_key_with_iv.and_salt(&SAMPLE_SALT_8);
 
     assert!(complete_key.key().is_some());
     assert!(complete_key.iv().is_some());
@@ -61,7 +53,6 @@ fn test_fluent_init_8() {
 
 #[test]
 fn test_fluent_auto_init_8() {
-
     let mut partial_key: SymmetricKey<u8> = SymmetricKey::with_key(&SAMPLE_KEY_8);
 
     assert!(partial_key.key().is_some());
@@ -85,12 +76,8 @@ fn test_fluent_auto_init_8() {
 }
 
 #[test]
-fn  test_clone_8() {
-    let key: SymmetricKey<u8> = SymmetricKey::new(
-        &SAMPLE_KEY_8,
-        &SAMPLE_IV_8,
-        &SAMPLE_SALT_8
-    );
+fn test_clone_8() {
+    let key: SymmetricKey<u8> = SymmetricKey::new(&SAMPLE_KEY_8, &SAMPLE_IV_8, &SAMPLE_SALT_8);
 
     let clone: SymmetricKey<u8> = key.clone();
 

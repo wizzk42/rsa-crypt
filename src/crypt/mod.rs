@@ -1,7 +1,6 @@
 ///
 ///
 ///
-
 pub mod api;
 pub mod crypter;
 pub mod decrypter;
@@ -9,10 +8,7 @@ pub mod encrypter;
 pub mod types;
 pub mod util;
 
-use api::{
-    algorithm::Algorithm,
-    aes::AesCipherMode
-};
+use api::{algorithm::Algorithm, aes::AesCipherMode};
 
 #[derive(Clone, Debug)]
 pub struct AesOpts {
@@ -22,37 +18,45 @@ pub struct AesOpts {
 impl Default for AesOpts {
     fn default() -> Self {
         AesOpts {
-            mode: Some(AesCipherMode::Aes256Gcm)
+            mode: Some(AesCipherMode::Aes256Gcm),
         }
     }
 }
 
 #[derive(Clone, Debug)]
-pub struct RsaOpts {
-}
+pub struct RsaOpts {}
 
 #[derive(Clone, Debug)]
 pub struct CryptOpts {
     pub algorithm: Option<Algorithm>,
     pub aes: Option<AesOpts>,
-    pub rsa: Option<RsaOpts>
+    pub rsa: Option<RsaOpts>,
 }
 
 impl CryptOpts {
     pub fn new() -> Self {
         Self::default()
     }
-    pub fn with_algorithm(&mut self, _algorithm: Algorithm) -> &Self {
+    pub fn with_algorithm(
+        &mut self,
+        _algorithm: Algorithm,
+    ) -> &Self {
         self.algorithm = Some(_algorithm);
         self.aes = Some(AesOpts::default());
         self
     }
-    pub fn with_aes(&mut self, _aes: AesOpts) -> &Self {
+    pub fn with_aes(
+        &mut self,
+        _aes: AesOpts,
+    ) -> &Self {
         self.aes = Some(_aes);
         self.rsa = None;
         self
     }
-    pub fn with_rsa(&mut self, _rsa: RsaOpts) -> &Self {
+    pub fn with_rsa(
+        &mut self,
+        _rsa: RsaOpts,
+    ) -> &Self {
         self.aes = None;
         self.rsa = Some(_rsa);
         self
@@ -64,7 +68,7 @@ impl CryptOpts {
         &self.aes
     }
     pub fn rsa_ref(&self) -> &Option<RsaOpts> {
-       &self.rsa
+        &self.rsa
     }
 }
 impl Default for CryptOpts {
@@ -72,7 +76,7 @@ impl Default for CryptOpts {
         CryptOpts {
             algorithm: None,
             aes: None,
-            rsa: None
+            rsa: None,
         }
     }
 }
@@ -81,22 +85,31 @@ impl Default for CryptOpts {
 pub struct CryptParams {
     pub base64: bool,
     pub passphrase: Option<Vec<u8>>,
-    pub aead: Option<Vec<u8>>
+    pub aead: Option<Vec<u8>>,
 }
 
 impl CryptParams {
     pub fn new() -> Self {
         Self::default()
     }
-    pub fn with_base64(&mut self, _base64: bool) -> &Self {
+    pub fn with_base64(
+        &mut self,
+        _base64: bool,
+    ) -> &Self {
         self.base64 = _base64;
         self
     }
-    pub fn with_passphrase(&mut self, _passphrase: Vec<u8>) -> &Self {
+    pub fn with_passphrase(
+        &mut self,
+        _passphrase: Vec<u8>,
+    ) -> &Self {
         self.passphrase = Some(_passphrase);
         self
     }
-    pub fn with_aead(&mut self, _aead: Vec<u8>) -> &Self {
+    pub fn with_aead(
+        &mut self,
+        _aead: Vec<u8>,
+    ) -> &Self {
         self.aead = Some(_aead);
         self
     }

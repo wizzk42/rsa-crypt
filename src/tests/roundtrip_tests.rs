@@ -51,7 +51,8 @@ fn test_rsa_encrypt_decrypt_roundtrip() {
 
 #[test]
 fn test_aes_encrypt_decrypt_roundtrip() {
-    let (keydata, ivdata, saltdata) = load_aes_key(&read_from_file("src/tests/fixtures/sample.aes.key"));
+    let (keydata, ivdata, saltdata) =
+        load_aes_key(&read_from_file("src/tests/fixtures/sample.aes.key"));
 
     let mut crypt_opts: CryptOpts = CryptOpts::new();
     crypt_opts.with_algorithm(Algorithm::Aes);
