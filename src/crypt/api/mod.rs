@@ -9,5 +9,6 @@ pub mod ciphermodes;
 pub mod decryptable;
 pub mod encryptable;
 pub mod key;
+pub mod keyitem;
 pub mod rsa;
 pub mod symmetric;

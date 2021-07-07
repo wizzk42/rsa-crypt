@@ -1,7 +1,6 @@
 ///
 ///
 ///
-
 extern crate openssl;
 
 use openssl::{
@@ -10,13 +9,8 @@ use openssl::{
 };
 
 use crate::crypt::{
-    CryptOpts,
-    CryptParams,
-    api::{
-        rsa::RsaAsymmetricKey,
-        encryptable::Encryptable,
-        key::Key,
-    },
+    api::{encryptable::Encryptable, key::Key, rsa::RsaAsymmetricKey},
+    CryptOpts, CryptParams,
 };
 
 pub struct RsaEncrypter {
@@ -31,16 +25,23 @@ impl RsaEncrypter {
 
 impl Encryptable<RsaAsymmetricKey> for RsaEncrypter {
     fn new(_key: &Key<RsaAsymmetricKey>, _opts: &CryptOpts) -> Self {
-        RsaEncrypter { key: _key.to_owned() }
+        RsaEncrypter {
+            key: _key.to_owned(),
+        }
     }
-    fn encrypt(&self, _plaintext: &[u8], _ciphertext: &mut Vec<u8>, _params: &CryptParams) -> usize {
+    fn encrypt(
+        &self,
+        _plaintext: &[u8],
+        _ciphertext: &mut Vec<u8>,
+        _params: &CryptParams,
+    ) -> usize {
         match self.load_public_key() {
             Some(k) => {
                 _ciphertext.resize(k.size() as usize, 0);
                 k.public_encrypt(_plaintext, _ciphertext, Padding::PKCS1_OAEP)
                     .unwrap()
-            },
-            None => 0
+            }
+            None => 0,
         }
     }
 }

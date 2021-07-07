@@ -9,12 +9,8 @@ extern crate structopt;
 use structopt::StructOpt;
 
 extern crate rsa_crypt;
-use crate::rsa_crypt::{
-    crypt,
-    hash,
-    kdf,
-    util,
-};
+
+use crate::rsa_crypt::*;
 
 pub mod tests;
 
@@ -52,21 +48,19 @@ struct CryptCommandLine {
 }
 
 impl CryptCommandLine {
-    pub fn to_crypt_opts(&self, _algorithm: &crypt::api::algorithm::Algorithm) -> crypt::CryptOpts {
-        let mut res: crypt::CryptOpts = crypt::CryptOpts {
+    pub fn to_crypt_opts(&self, _algorithm: &Algorithm) -> CryptOpts {
+        let mut res: CryptOpts = CryptOpts {
             algorithm: Some(_algorithm.clone()),
             aes: None,
             rsa: None,
         };
-        match _algorithm {
-            crypt::api::algorithm::Algorithm::Aes => {
-                let aes: crypt::AesOpts = crypt::AesOpts {
-                    mode: crypt::api::aes::AesCipherMode::from_str(&self.aesCipherMode.as_str()).ok()
-                };
-                res.aes = Some(aes);
-            },
-            crypt::api::algorithm::Algorithm::Rsa => {}
+
+        let aes: AesOpts = AesOpts {
+            mode: AesCipherMode::from_str(
+                    &self.aesCipherMode.as_str()
+                ).ok()
         };
+        res.aes = Some(aes);
         res
     }
 }
@@ -92,43 +86,39 @@ impl KdfCommandLine {
         p.algorithm = kdf::Algorithm::from_str(&self.algorithm).unwrap_or(kdf::Algorithm::None);
         p.hash = hash::Hash::from_str(&self.hash).unwrap_or(hash::Hash::Sha3_512);
         p.iter = self.iter;
-        p.salt =util:: hexdata::HexVec::from_bytes(self.salt.as_bytes().to_vec());
-        p.passphrase = util::hexdata::HexVec::from_bytes(self.passphrase.as_bytes().to_vec());
+        p.salt = HexVec::from_bytes(self.salt.as_bytes().to_vec());
+        p.passphrase = HexVec::from_bytes(self.passphrase.as_bytes().to_vec());
         p
     }
 }
-fn load_key(_keyfile: &str) -> Vec<u8> {
-    vec![]
-}
 
 fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
-
-    use crypt::api::encryptable::Encryptable;
-    let opts: crypt::CryptOpts = _cli.to_crypt_opts(&crypt::api::algorithm::Algorithm::from_str(&_cli.algorithm).unwrap());
-    let params: crypt::CryptParams = crypt::CryptParams::new();
+    let opts: CryptOpts = _cli.to_crypt_opts(
+        &Algorithm::from_str(&_cli.algorithm).unwrap_or(Algorithm::None)
+    );
+    let params: CryptParams = CryptParams::default();
 
 
     let mut ciphertext: Vec<u8> = vec![];
     let plaintext: Vec<u8> = vec![];
 
-    let res = match crypt::api::algorithm::Algorithm::from_str(_cli.algorithm.as_str()) {
-        Ok(crypt::api::algorithm::Algorithm::Aes) => {
-            let keydata: Vec<u8> = load_key(&_cli.keyfile);
-            let ivdata: Vec<u8> = vec![];
-            let saltdata: Vec<u8> = vec![0xde,0xad,0xbe, 0xef];
-            let key: crypt::api::key::Key<crypt::api::aes::AesSymmetricKey> = crypt::api::key::Key::new(&crypt::api::aes::AesSymmetricKey::new(&keydata, &ivdata, &saltdata));
-            let encrypter: crypt::encrypter::Encrypter<crypt::encrypter::aes::AesEncrypter> = crypt::encrypter::Encrypter::new(&key, &opts);
+    let res = match Algorithm::from_str(_cli.algorithm.as_str()) {
+        Ok(Algorithm::Aes) => {
+            let (keydata, ivdata, saltdata) = load_aes_key(&read_from_file(&_cli.keyfile));
+            let key: Key<AesSymmetricKey> = Key::new(
+                &AesSymmetricKey::new(&keydata, &ivdata, &saltdata)
+            );
+            let encrypter: Encrypter<AesEncrypter> = Encrypter::new(&key, &opts);
             encrypter.encrypt(&plaintext, &mut ciphertext, &params)
         },
-        Ok(crypt::api::algorithm::Algorithm::Rsa) => {
-            let keydata: Vec<u8> = load_key(&_cli.keyfile);
-            let key: crypt::api::key::Key<crypt::api::rsa::RsaAsymmetricKey> = crypt::api::key::Key::new(&crypt::api::rsa::RsaAsymmetricKey::new(&keydata));
-            let encrypter: crypt::encrypter::Encrypter<crypt::encrypter::rsa::RsaEncrypter> = crypt::encrypter::Encrypter::new(&key, &opts);
+        Ok(Algorithm::Rsa) => {
+            let keydata: Vec<u8> = load_rsa_key(&read_from_file(&_cli.keyfile));
+            let key: Key<RsaAsymmetricKey> = Key::new(&RsaAsymmetricKey::new(&keydata));
+            let encrypter: Encrypter<RsaEncrypter> = Encrypter::new(&key, &opts);
             encrypter.encrypt(&plaintext, &mut ciphertext, &params)
         },
-        Err(()) => {
-            0
-        },
+        Ok(Algorithm::None) => { 0 },
+        Err(()) => { 0 },
     };
 
     if res > 0 {
@@ -139,34 +129,52 @@ fn cmd_encrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
 }
 
 fn cmd_decrypt(_cli: &CryptCommandLine) -> Result<(), i32> {
-    use crypt::api::decryptable::Decryptable;
 
-    let opts: crypt::CryptOpts = _cli.to_crypt_opts(&crypt::api::algorithm::Algorithm::from_str(&_cli.algorithm).unwrap());
-    let params: crypt::CryptParams = crypt::CryptParams::new();
+    let opts: CryptOpts = _cli.to_crypt_opts(&Algorithm::from_str(&_cli.algorithm).unwrap());
+    let params: CryptParams = CryptParams::default();
 
     let ciphertext: Vec<u8> = vec![];
     let mut plaintext: Vec<u8> = vec![];
 
-    let res = match crypt::api::algorithm::Algorithm::from_str(_cli.algorithm.as_str()) {
-        Ok(crypt::api::algorithm::Algorithm::Aes) => {
+    let res = match Algorithm::from_str(_cli.algorithm.as_str()) {
+        Ok(Algorithm::Aes) => {
 
-            let keydata: Vec<u8> = load_key(&_cli.keyfile);
-            let ivdata: Vec<u8> = vec![];
-            let saltdata: Vec<u8> = vec![0xde,0xad,0xbe, 0xef];
+            let (keydata, ivdata, saltdata) = load_aes_key(&read_from_file(&_cli.keyfile));
 
-            let key: crypt::api::key::Key<crypt::api::aes::AesSymmetricKey> = crypt::api::key::Key::new(&crypt::api::aes::AesSymmetricKey::new(&keydata, &ivdata, &saltdata));
-            let decrypter: crypt::decrypter::Decrypter<crypt::AesDecrypter> = crypt::decrypter::Decrypter::new(&key, &opts);
-            decrypter.decrypt(&mut plaintext, &ciphertext, &params)
+            let key: Key<AesSymmetricKey> = Key::new(
+                &AesSymmetricKey::new(
+                    &keydata,
+                    &ivdata,
+                    &saltdata
+                )
+            );
+            let decrypter: Decrypter<AesDecrypter> = Decrypter::new(
+                &key,
+                &opts
+            );
+            decrypter.decrypt(
+                &mut plaintext,
+                &ciphertext,
+                &params
+            )
         },
-        Ok(crypt::api::algorithm::Algorithm::Rsa) => {
-            let keydata: Vec<u8> = load_key(&_cli.keyfile);
-            let key: crypt::api::key::Key<crypt::api::rsa::RsaAsymmetricKey> = crypt::api::key::Key::new(&crypt::api::rsa::RsaAsymmetricKey::new(&keydata));
-            let decrypter: crypt::decrypter::Decrypter<crypt::decrypter::rsa::RsaDecrypter> = crypt::decrypter::Decrypter::new(&key, &opts);
-            decrypter.decrypt(&mut plaintext, &ciphertext, &params)
+        Ok(Algorithm::Rsa) => {
+            let keydata = load_rsa_key(&read_from_file(&_cli.keyfile));
+            let key: Key<RsaAsymmetricKey> = Key::new(
+                &RsaAsymmetricKey::new(&keydata)
+            );
+            let decrypter: Decrypter<RsaDecrypter> = Decrypter::new(
+                &key,
+                &opts
+            );
+            decrypter.decrypt(
+                &mut plaintext,
+                &ciphertext,
+                &params
+            )
         },
-        Err(()) => {
-            0
-        },
+        Ok(Algorithm::None) => { 0 },
+        Err(()) => { 0 },
     };
 
     if res > 0 {
@@ -183,7 +191,7 @@ fn cmd_password(_cli: &KdfCommandLine) -> Result<(), i32> {
 
     match kdf::generate(
         &_cli.to_key_derivation_parameters(),
-        &opts.to_owned(),
+        &opts,
     ) {
         Ok(res) => {
             println!("{:?}", res);
